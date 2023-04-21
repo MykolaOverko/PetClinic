@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(
+                    branches: [[name: 'main']],
+                    userRemoteConfigs: [[url: 'https://github.com/MykolaOverko/PetClinic']])  
+            }
+        }
+        stage('Build') {
+            tools {
+                jdk 'java-17-openjdk-amd64'
+            }
+            steps {
+                echo 'Build PetClinic begin'
+                // sh "cd /usr/lib/jvm && ls -la"
+                sh "cd ./spring-petclinic && ./mvnw package"
+                sh "cd ./spring-petclinic && java -jar target/*.jar> ./loog 2>&1 &"
+            }
+        }
+    }
+}
